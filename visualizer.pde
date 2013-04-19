@@ -29,21 +29,9 @@ void draw()
   webcam_img = opencv.image();
 
   // Find the pixel closest to c0 and make it white in output_img
-  color c0 = blue;
-  int closest_idx = -1;
-  float closest_dist = MAX_FLOAT;
-
-  webcam_img.loadPixels();
-  for (int i = 0; i < FRAME_WIDTH * FRAME_HEIGHT; i++) {
-    color c = webcam_img.pixels[i];
-    float d = dist(hue(c), hue(c0), saturation(c), saturation(c0), brightness(c), brightness(c0));
-    if (d < closest_dist) {
-      closest_dist = d;
-      closest_idx = i;
-    }
-  }
+  int idx = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
   output_img.loadPixels();
-  output_img.pixels[closest_idx] = color(255, 255, 255);
+  output_img.pixels[idx] = color(255, 255, 255);
   output_img.updatePixels();
 
   blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,

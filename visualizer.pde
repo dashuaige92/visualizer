@@ -1,8 +1,8 @@
 import hypermedia.video.*;        //  Imports the OpenCV library
 OpenCV opencv;                    //  Creates a new OpenCV Object
 
-int FRAME_HEIGHT = 240;
-int FRAME_WIDTH = 320;
+int FRAME_HEIGHT = 360;
+int FRAME_WIDTH = 480;
 
 PImage webcam_img;
 PImage output_img;
@@ -21,12 +21,13 @@ void setup()
 
 void draw()
 {
-
+  // Get a mirrored webcam frame for intuitive UX.
   opencv.read();
+  opencv.flip(OpenCV.FLIP_HORIZONTAL);
   webcam_img = opencv.image();
 
   // Find the pixel closest to c0 and make it white in output_img
-  color c0 = color(0, 0, 255); // blue
+  color c0 = blue;
   int closest_idx = -1;
   float closest_dist = MAX_FLOAT;
 
@@ -44,15 +45,7 @@ void draw()
   output_img.updatePixels();
 
   // Display the webcam image
-  image(webcam_img, 0 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  image(webcam_img, 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
   // Display the output image
   image(output_img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
-
-  // Display some OpenCV effects
-  opencv.copy(webcam_img);
-  opencv.threshold(80, 255, opencv.THRESH_BINARY);
-  image(opencv.image(), 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
-  opencv.copy(webcam_img);
-  opencv.convert(opencv.GRAY);
-  image(opencv.image(), 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 }

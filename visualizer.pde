@@ -6,6 +6,7 @@ int FRAME_WIDTH = 480;
 
 PImage webcam_img;
 PImage output_img;
+PImage blend_img;
 
 void setup()
 {
@@ -17,6 +18,7 @@ void setup()
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
 
   output_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
+  blend_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
 }
 
 void draw()
@@ -44,8 +46,14 @@ void draw()
   output_img.pixels[closest_idx] = color(255, 255, 255);
   output_img.updatePixels();
 
+  blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
+      0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  blend_img.blend(output_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
+      0, 0, FRAME_WIDTH, FRAME_HEIGHT, SCREEN);
+
   // Display the webcam image
   image(webcam_img, 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
   // Display the output image
   image(output_img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  image(blend_img, 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 }

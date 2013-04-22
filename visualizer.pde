@@ -19,6 +19,8 @@ void setup()
 
   output_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
   blend_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
+
+  loadTemplates();
 }
 
 void draw()
@@ -30,9 +32,7 @@ void draw()
 
   // Find the pixel closest to c0 and make it white in output_img
   int idx = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
-  output_img.loadPixels();
-  output_img.pixels[idx] = color(255, 255, 255);
-  output_img.updatePixels();
+  paint(output_img, getX(idx, webcam_img), getY(idx, webcam_img), dot);
 
   blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
       0, 0, FRAME_WIDTH, FRAME_HEIGHT);

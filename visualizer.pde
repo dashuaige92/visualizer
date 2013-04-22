@@ -1,12 +1,13 @@
 import hypermedia.video.*;        //  Imports the OpenCV library
 OpenCV opencv;                    //  Creates a new OpenCV Object
 
+import java.awt.Rectangle;
+import java.awt.Point;
+
 int FRAME_HEIGHT = 360;
 int FRAME_WIDTH = 480;
 
-PImage webcam_img;
-PImage output_img;
-PImage blend_img;
+int threshold = 80;
 
 PVector[] lastPosition = new PVector[1]; // One for each finger
 
@@ -18,11 +19,6 @@ void setup()
   opencv = new OpenCV(this);
   // Opens a video capture stream
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
-
-  output_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
-  blend_img = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
-
-  loadTemplates();
 }
 
 void draw()
@@ -30,26 +26,28 @@ void draw()
   // Get a mirrored webcam frame for intuitive UX.
   opencv.read();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
-  webcam_img = opencv.image();
+  opencv.remember();
+  image(opencv.image(), 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
+  // Process the image so we can perform computer vision on it.
+  opencv.threshold(threshold);
+  image(opencv.image(), 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  image(opencv.image(), 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
-  // Find the pixel closest to c0 and make it white in output_img
-  PVector id = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
-  if (lastPosition[0] != null)
-    variableEllipse(id, lastPosition[0]);
-  paint(output_img, (int)id.x, (int)id.y, dot);
+  // Find blobs and draw them
+  Blob[] blobs = opencv.blobs(100, FRAME_WIDTH * FRAME_HEIGHT / 3, 20, true);
+  pushMatrix();
+  translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  drawBlobs(blobs);
+  popMatrix();
+}
 
-  blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
-      0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-  blend_img.blend(output_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
-      0, 0, FRAME_WIDTH, FRAME_HEIGHT, SCREEN);
+void mouseDragged() {
+  threshold = (int) map(mouseX, 0, width, 0, 255);
+  println("threshold\t-> " + threshold);
+}
 
-  // Display the webcam image
-  image(webcam_img, 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
-  // Display the output image
-  image(output_img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
-  image(blend_img, 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
-
-  // Store data for next frame
-  lastPosition[0] = id;
+void keyPressed() {
+  threshold = 80;
+  println("threshold\t-> " + threshold);
 }

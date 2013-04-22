@@ -1,22 +1,28 @@
 // Look for the pixel whose color is closest to c0 in src
-// Returns the index in src.pixels[]
-int matchColor(PImage src, color c0, int sw, int sh) {
-  int closest_idx = -1;
-  float closest_dist = MAX_FLOAT;
-
-  src.loadPixels();
-  for (int i = 0; i < sw * sh; i++) {
-    color c = src.pixels[i];
-    float d = dist(
-        hue(c), hue(c0),
-        saturation(c), saturation(c0),
+// Returns a PVector containing the xy value of the best pixel
+PVector matchColor(PImage src, color c0, int sw, int sh){
+  int closestY = -1;
+  int closestX = -1;
+  float closestDist = MAX_FLOAT;
+  
+  for(int y = 0; y < sh; y++)
+  {
+    for(int x = 0; x < sw; x++)
+    {
+      color c = src.get(x, y);
+      float d = dist(
+        hue(c), hue(c0), 
+        saturation(c), saturation(c0), 
         brightness(c), brightness(c0)
         );
-    if (d < closest_dist) {
-      closest_dist = d;
-      closest_idx = i;
-    }
+      if(d < closestDist){
+        closestDist = d;
+        closestY = y;
+        closestX = x;
+      }
+    } 
   }
-
-  return closest_idx;
+  
+  return new PVector(closestX, closestY);
+   
 }

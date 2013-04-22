@@ -31,8 +31,8 @@ void draw()
   webcam_img = opencv.image();
 
   // Find the pixel closest to c0 and make it white in output_img
-  int idx = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
-  paint(output_img, getX(idx, webcam_img), getY(idx, webcam_img), dot);
+  PVector id = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
+  paint(output_img, (int)id.x, (int)id.y, dot);
 
   blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
       0, 0, FRAME_WIDTH, FRAME_HEIGHT);

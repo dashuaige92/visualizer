@@ -8,6 +8,8 @@ PImage webcam_img;
 PImage output_img;
 PImage blend_img;
 
+PVector[] lastPosition = new PVector[1]; // One for each finger
+
 void setup()
 {
   size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
@@ -30,8 +32,11 @@ void draw()
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
   webcam_img = opencv.image();
 
+
   // Find the pixel closest to c0 and make it white in output_img
   PVector id = matchColor(webcam_img, blue, FRAME_WIDTH, FRAME_HEIGHT);
+  if (lastPosition[0] != null)
+    variableEllipse(id, lastPosition[0]);
   paint(output_img, (int)id.x, (int)id.y, dot);
 
   blend_img.copy(webcam_img, 0, 0, FRAME_WIDTH, FRAME_HEIGHT,
@@ -44,4 +49,7 @@ void draw()
   // Display the output image
   image(output_img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   image(blend_img, 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
+
+  // Store data for next frame
+  lastPosition[0] = id;
 }

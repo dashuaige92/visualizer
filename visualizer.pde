@@ -8,8 +8,8 @@ int FRAME_HEIGHT = 360;
 int FRAME_WIDTH = 480;
 
 int threshold = 70;
-float distanceWeight = 50;
-float maxMovement = 50;
+float maxDistance; // Distance at which distance contribution is clamped
+float distanceWeight = 255; // Max contribution of distance
 
 float[] gloveColors = {0, 50, 250, 20, 141};
 float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
@@ -22,6 +22,7 @@ Point[] lastPosition = new Point[5];
 void setup()
 {
   size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
+  keyPressed();
 
   // Initialises the OpenCV object
   opencv = new OpenCV(this);
@@ -52,7 +53,7 @@ void draw()
   // Find blobs and draw them
   image(img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   opencv.copy(img);
-  Blob[] blobs = opencv.blobs(100, 1000, 20, true);
+  Blob[] blobs = opencv.blobs(250, 1000, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
@@ -61,31 +62,26 @@ void draw()
   // Hue filter our image and find markers.
   hueFilter(img);
   nearestMatch = new float[] {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
-  for (int i = 0; i < blobs.length; i++)
+  for (int i = 1; i < 5; i++)
   {
-    Point c = blobs[i].centroid;
-
-    for (int j = 1; j < 5; j++)
+    for (int j = 0; j < blobs.length; j++)
     {
+      Point c = blobs[j].centroid;
+      float d = hueDist(img.get(c.x, c.y), gloveColors[i]);
+
       // Distance is function of distance from lastPosition and hueDist.
-      float d = hueDist(img.get(c.x, c.y), gloveColors[j]);
-
-      if (lastPosition[j] != null)
+      if (lastPosition[i] != null)
       {
-        Point c0 = lastPosition[j];
-        d += map(abs(c.x - c0.x) + abs(c.y - c0.y), 0, FRAME_WIDTH + FRAME_HEIGHT, 0, distanceWeight);
-        println(d);
+        Point c0 = lastPosition[i];
+        float dPosition = map(abs(c.x - c0.x) + abs(c.y - c0.y), 0, maxDistance, 0, distanceWeight);
+        dPosition = dPosition > distanceWeight ? distanceWeight : dPosition;
+        d += dPosition;
       }
-      //if (lastPosition[j] != null) {
-        //Point c0 = lastPosition[j];
-        //if (abs(c.x - c0.x) + abs(c.y - c0.y) > maxMovement)
-        //continue;
-        //}
 
-      if (d < nearestMatch[j])
+      if (d < nearestMatch[i])
       {
-        currPosition[j] = c;
-        nearestMatch[j] = d;
+        currPosition[i] = c;
+        nearestMatch[i] = d;
       }
     }
   }
@@ -112,22 +108,20 @@ void draw()
   continuousLines(currPosition[4], lastPosition[4]);
  
   arrayCopy(currPosition, lastPosition);
- 
-
 }
 
 void mouseDragged()
 {
-  maxMovement = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
-  println("maxMovement\t-> " + maxMovement);
-  distanceWeight = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
+  maxDistance = (int) map(mouseX, 0, width, 0, 100);
+  println("maxDistance\t-> " + maxDistance);
+  distanceWeight = (int) map(mouseX, 0, width, 0, 1000);
   println("distanceWeight\t-> " + distanceWeight);
 }
 
 void keyPressed()
 {
-  maxMovement = 50;
-  println("maxMovement\t-> " + maxMovement);
-  distanceWeight = 50;
+  maxDistance = 50;
+  println("maxDistance\t-> " + maxDistance);
+  distanceWeight = 255;
   println("distanceWeight\t-> " + distanceWeight);
 }

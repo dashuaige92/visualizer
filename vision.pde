@@ -37,13 +37,41 @@ void meanShiftFilter(PImage src, int r, float d, int maxIter)
 {
   src.filter(GRAY); // Make sure this function is run. Delete later.
   src.loadPixels();
+  
   for (int i = 0; i < maxIter; i++)
   {
     for (int x = 0; x < src.width; x++)
     {
       for (int y = 0; y < src.height; y++)
       {
-        // TODO
+        color c = src.get(x,y);
+        int colorTotalR = 0;
+        int colorTotalG = 0;
+        int colorTotalB = 0;
+        int numColors = 0;
+        //look at colors within radius window
+        //average colors within distance to center and assign new value to center
+        for (int j = x - r; j <= x + r; j++)
+        {
+          for(int k = y - r;  k <= y + r; k++)
+          {
+            if(cDist(src.get(j,k),c) < d && cDist(src.get(j,k),c) > d * (-1))  
+            {
+               colorTotalR += red(neighbors[m]);
+               colorTotalG += green(neighbors[m]);
+               colorTotalB += blue(neighbors[m]);
+               numColors++;
+            }
+             
+          }
+          
+        }
+      
+        int finalR = colorTotalR/numColors;
+        int finalG = colorTotalG/numColors;
+        int finalB = colorTotalB/numColors;
+        color finalC = color(finalR, finalG, finalB);
+        src.set(x,y, finalC); 
       }
     }
   }

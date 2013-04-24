@@ -35,11 +35,18 @@ void draw()
   image(opencv.image(), 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
   // Find blobs and draw them
-  Blob[] blobs = opencv.blobs(100, FRAME_WIDTH * FRAME_HEIGHT / 3, 20, true);
+  Blob[] blobs = opencv.blobs(100, FRAME_WIDTH * FRAME_HEIGHT / 50, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
   popMatrix();
+
+  // Show means shift segmentation in top left.
+  opencv.restore();
+  opencv.flip(OpenCV.FLIP_HORIZONTAL);
+  PImage src = opencv.image();
+  meanShiftFilter(src, 0, 0, 0);
+  image(src, 0 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
 }
 
 void mouseDragged() {

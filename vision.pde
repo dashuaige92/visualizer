@@ -1,3 +1,12 @@
+float cDist(color c1, color c2)
+{
+  return dist(
+      hue(c1), hue(c2), 
+      saturation(c1), saturation(c2), 
+      brightness(c1), brightness(c2)
+      );
+}
+
 // Look for the pixel whose color is closest to c0 in src
 // Returns a PVector containing the xy value of the best pixel
 PVector matchColor(PImage src, color c0, int sw, int sh)
@@ -11,11 +20,7 @@ PVector matchColor(PImage src, color c0, int sw, int sh)
     for(int x = 0; x < sw; x++)
     {
       color c = src.get(x, y);
-      float d = dist(
-        hue(c), hue(c0), 
-        saturation(c), saturation(c0), 
-        brightness(c), brightness(c0)
-        );
+      float d = cDist(c, c0);
       if(d < closestDist){
         closestDist = d;
         closestY = y;
@@ -26,8 +31,28 @@ PVector matchColor(PImage src, color c0, int sw, int sh)
   return new PVector(closestX, closestY);
 }
 
+// Mean shift src with radius r and maximum color distance d based on cDist.
+// NOTE: src will be modified
+void meanShiftFilter(PImage src, int r, float d, int maxIter)
+{
+  src.filter(GRAY); // Make sure this function is run. Delete later.
+  src.loadPixels();
+  for (int i = 0; i < maxIter; i++)
+  {
+    for (int x = 0; x < src.width; x++)
+    {
+      for (int y = 0; y < src.height; y++)
+      {
+        // TODO
+      }
+    }
+  }
+  src.updatePixels();
+}
+
 // Code taken from OpenCV blobs example.
-void drawBlobs(Blob[] blobs) {
+void drawBlobs(Blob[] blobs)
+{
   for (int i = 0; i < blobs.length; i++)
   {
     Rectangle bounding_rect	= blobs[i].rectangle;

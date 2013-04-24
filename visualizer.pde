@@ -9,7 +9,7 @@ int FRAME_WIDTH = 480;
 
 int threshold = 70;
 float maxDistance; // Distance at which distance contribution is clamped
-float distanceWeight = 255; // Max contribution of distance
+float distanceWeight; // Max contribution of distance
 
 float[] gloveColors = {0, 50, 250, 20, 141};
 float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
@@ -69,7 +69,8 @@ void draw()
       if (lastPosition[i] != null)
       {
         Point c0 = lastPosition[i];
-        float dPosition = map(abs(c.x - c0.x) + abs(c.y - c0.y), 0, maxDistance, 0, distanceWeight);
+        float dPosition = map(abs(c.x - c0.x) + abs(c.y - c0.y), maxDistance / 2, maxDistance, 0, distanceWeight);
+        dPosition = dPosition < 0 ? 0 : dPosition;
         dPosition = dPosition > distanceWeight ? distanceWeight : dPosition;
         d += dPosition;
       }
@@ -97,14 +98,14 @@ void mouseDragged()
 {
   maxDistance = (int) map(mouseX, 0, width, 0, 100);
   println("maxDistance\t-> " + maxDistance);
-  distanceWeight = (int) map(mouseX, 0, width, 0, 1000);
+  distanceWeight = (int) map(mouseY, 0, width, 0, 100);
   println("distanceWeight\t-> " + distanceWeight);
 }
 
 void keyPressed()
 {
-  maxDistance = 50;
+  maxDistance = 100;
   println("maxDistance\t-> " + maxDistance);
-  distanceWeight = 255;
+  distanceWeight = 30;
   println("distanceWeight\t-> " + distanceWeight);
 }

@@ -22,7 +22,6 @@ void setup()
 {
   size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
   keyPressed();
-  lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
 
   // Initialises the OpenCV object
   opencv = new OpenCV(this);
@@ -49,7 +48,7 @@ void draw()
   // Find blobs and draw them
   image(img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   opencv.copy(img);
-  Blob[] blobs = opencv.blobs(250, 1000, 20, true);
+  Blob[] blobs = opencv.blobs(100, 1000, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
@@ -89,7 +88,7 @@ void draw()
 
   continuousLines(currPosition[4], lastPosition[4]);
  
-  lastFrame.copy(0, 0, FRAME_WIDTH, FRAME_HEIGHT, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  lastFrame = get(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
   drawMarkers(img);
   arrayCopy(currPosition, lastPosition);
 }
@@ -104,6 +103,7 @@ void mouseDragged()
 
 void keyPressed()
 {
+  lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
   maxDistance = 100;
   println("maxDistance\t-> " + maxDistance);
   distanceWeight = 30;

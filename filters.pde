@@ -1,7 +1,8 @@
 void hueFilter(PImage img) {
   img.loadPixels();
   for (int i = 0; i < img.width * img.height; i++) {
-    img.pixels[i] = color(hue(img.pixels[i]), 255, 255);
+    if (hex(img.pixels[i]) != "FF000000")
+      img.pixels[i] = color(hue(img.pixels[i]), 255, 255);
   }
   img.updatePixels();
 }

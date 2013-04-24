@@ -1,3 +1,14 @@
+float hueDist(color c1, float h)
+{
+  float d = abs(hue(c1) - h);
+  return min(d, 255 - d);
+}
+
+float hueDist(color c1, color c2)
+{
+  return hueDist(c1, hue(c2));
+}
+
 float cDist(color c1, color c2)
 {
   return dist(

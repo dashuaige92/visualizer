@@ -7,9 +7,12 @@ import java.awt.Point;
 int FRAME_HEIGHT = 360;
 int FRAME_WIDTH = 480;
 
-int threshold = 80;
+int threshold = 70;
 
-PVector[] lastPosition = new PVector[1]; // One for each finger
+float[] gloveColors = {0, 42, 250, 20, 141};
+float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
+Point[] currPosition = new Point[5];
+Point[] lastPosition = new Point[5];
 
 void setup()
 {
@@ -23,37 +26,54 @@ void setup()
 
 void draw()
 {
-  PImage src;
+  colorMode(HSB);
+  background(0);
+
+  PImage img;
   // Get a mirrored webcam frame for intuitive UX.
   opencv.read();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
-  opencv.remember();
-  image(opencv.image(), 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
+  img = opencv.image();
+  image(img, 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
   // Process the image so we can perform computer vision on it.
-  opencv.threshold(threshold);
-  image(opencv.image(), 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
-
-  // Only white should stay white for opencv.blobs to work
-  src = opencv.image();
-  src.filter(GRAY);
-  src.filter(THRESHOLD, .9);
-  opencv.copy(src);
-  image(opencv.image(), 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  saturationFilter(img, threshold, true);
+  image(img, 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
   // Find blobs and draw them
-  Blob[] blobs = opencv.blobs(100, FRAME_WIDTH * FRAME_HEIGHT / 50, 20, true);
+  image(img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  opencv.copy(img);
+  Blob[] blobs = opencv.blobs(250, 1000, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
   popMatrix();
 
-  // Show means shift segmentation in top left.
-  opencv.restore();
-  opencv.flip(OpenCV.FLIP_HORIZONTAL);
-  src = opencv.image();
-  meanShiftFilter(src, 2, 25, 1);
-  image(src, 0 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
+  // Hue filter our image and find markers.
+  hueFilter(img);
+  nearestMatch = new float[] {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
+  for (int i = 0; i < blobs.length; i++)
+  {
+    Point c = blobs[i].centroid;
+
+    for (int j = 1; j < 5; j++) {
+      float d = hueDist(img.get(c.x, c.y), gloveColors[j]);
+      if (d < nearestMatch[j]) {
+        currPosition[j] = c;
+        nearestMatch[j] = d;
+      }
+    }
+  }
+  for (int i = 1; i < 5; i++) {
+    Point c = currPosition[i];
+    stroke(gloveColors[i], 255, 255);
+    line(c.x-5, c.y, c.x+5, c.y);
+    line(c.x, c.y-5, c.x, c.y+5);
+    noStroke();
+    text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
+  }
+
+  lastPosition = currPosition;
 }
 
 void mouseDragged() {
@@ -62,6 +82,6 @@ void mouseDragged() {
 }
 
 void keyPressed() {
-  threshold = 80;
+  threshold = 70;
   println("threshold\t-> " + threshold);
 }

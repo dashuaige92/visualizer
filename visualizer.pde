@@ -14,6 +14,9 @@ float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
+ 
+
+
 void setup()
 {
   size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
@@ -22,12 +25,16 @@ void setup()
   opencv = new OpenCV(this);
   // Opens a video capture stream
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
+  
+ 
 }
 
 void draw()
 {
   colorMode(HSB);
-  background(0);
+ // background(0);
+  
+
 
   PImage img;
   // Get a mirrored webcam frame for intuitive UX.
@@ -72,8 +79,19 @@ void draw()
     noStroke();
     text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
   }
+ 
+  if(lastPosition[4] == null)
+  {
+     System.out.println("GOT HERE");
+    arrayCopy(currPosition, lastPosition);
+  }
+   
 
-  lastPosition = currPosition;
+  continuousLines(currPosition[4], lastPosition[4]);
+ 
+  arrayCopy(currPosition, lastPosition);
+ 
+
 }
 
 void mouseDragged() {

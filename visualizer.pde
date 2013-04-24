@@ -8,8 +8,10 @@ int FRAME_HEIGHT = 360;
 int FRAME_WIDTH = 480;
 
 int threshold = 70;
+float distanceWeight = 50;
+float maxMovement = 50;
 
-float[] gloveColors = {0, 42, 250, 20, 141};
+float[] gloveColors = {0, 50, 250, 20, 141};
 float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
@@ -50,7 +52,7 @@ void draw()
   // Find blobs and draw them
   image(img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   opencv.copy(img);
-  Blob[] blobs = opencv.blobs(250, 1000, 20, true);
+  Blob[] blobs = opencv.blobs(100, 1000, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
@@ -64,7 +66,20 @@ void draw()
     Point c = blobs[i].centroid;
 
     for (int j = 1; j < 5; j++) {
+      // Distance is function of distance from lastPosition and hueDist.
       float d = hueDist(img.get(c.x, c.y), gloveColors[j]);
+
+      if (lastPosition[j] != null) {
+        Point c0 = lastPosition[j];
+        d += map(abs(c.x - c0.x) + abs(c.y - c0.y), 0, FRAME_WIDTH + FRAME_HEIGHT, 0, distanceWeight);
+        println(d);
+      }
+      //if (lastPosition[j] != null) {
+        //Point c0 = lastPosition[j];
+        //if (abs(c.x - c0.x) + abs(c.y - c0.y) > maxMovement)
+          //continue;
+      //}
+
       if (d < nearestMatch[j]) {
         currPosition[j] = c;
         nearestMatch[j] = d;
@@ -73,11 +88,14 @@ void draw()
   }
   for (int i = 1; i < 5; i++) {
     Point c = currPosition[i];
+    if (c == null)
+      continue;
     stroke(gloveColors[i], 255, 255);
     line(c.x-5, c.y, c.x+5, c.y);
     line(c.x, c.y-5, c.x, c.y+5);
     noStroke();
     text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
+    text(nearestMatch[i], c.x+5, c.y+15);
   }
  
   if(lastPosition[4] == null)
@@ -95,11 +113,15 @@ void draw()
 }
 
 void mouseDragged() {
-  threshold = (int) map(mouseX, 0, width, 0, 255);
-  println("threshold\t-> " + threshold);
+  maxMovement = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
+  println("maxMovement\t-> " + maxMovement);
+  distanceWeight = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
+  println("distanceWeight\t-> " + distanceWeight);
 }
 
 void keyPressed() {
-  threshold = 70;
-  println("threshold\t-> " + threshold);
+  maxMovement = 50;
+  println("maxMovement\t-> " + maxMovement);
+  distanceWeight = 50;
+  println("distanceWeight\t-> " + distanceWeight);
 }

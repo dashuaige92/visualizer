@@ -23,6 +23,7 @@ void setup()
 
 void draw()
 {
+  PImage src;
   // Get a mirrored webcam frame for intuitive UX.
   opencv.read();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
@@ -31,8 +32,14 @@ void draw()
 
   // Process the image so we can perform computer vision on it.
   opencv.threshold(threshold);
-  image(opencv.image(), 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   image(opencv.image(), 1 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
+
+  // Only white should stay white for opencv.blobs to work
+  src = opencv.image();
+  src.filter(GRAY);
+  src.filter(THRESHOLD, .9);
+  opencv.copy(src);
+  image(opencv.image(), 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
 
   // Find blobs and draw them
   Blob[] blobs = opencv.blobs(100, FRAME_WIDTH * FRAME_HEIGHT / 50, 20, true);
@@ -44,7 +51,7 @@ void draw()
   // Show means shift segmentation in top left.
   opencv.restore();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
-  PImage src = opencv.image();
+  src = opencv.image();
   meanShiftFilter(src, 2, 25, 1);
   image(src, 0 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
 }

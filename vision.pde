@@ -35,7 +35,7 @@ PVector matchColor(PImage src, color c0, int sw, int sh)
 // NOTE: src will be modified
 void meanShiftFilter(PImage src, int r, float d, int maxIter)
 {
-  src.filter(GRAY); // Make sure this function is run. Delete later.
+//  src.filter(GRAY); // Make sure this function is run. Delete later.
   src.loadPixels();
   
   for (int i = 0; i < maxIter; i++)
@@ -55,23 +55,27 @@ void meanShiftFilter(PImage src, int r, float d, int maxIter)
         {
           for(int k = y - r;  k <= y + r; k++)
           {
-            if(cDist(src.get(j,k),c) < d && cDist(src.get(j,k),c) > d * (-1))  
+            if(cDist(src.get(j,k),c) < d)  
             {
-               colorTotalR += red(neighbors[m]);
-               colorTotalG += green(neighbors[m]);
-               colorTotalB += blue(neighbors[m]);
+            // System.out.println("color added"); 
+              colorTotalR += red(src.get(j,k));
+               colorTotalG += green(src.get(j,k));
+               colorTotalB += blue(src.get(j,k));
+               
                numColors++;
             }
              
           }
           
         }
-      
-        int finalR = colorTotalR/numColors;
-        int finalG = colorTotalG/numColors;
-        int finalB = colorTotalB/numColors;
-        color finalC = color(finalR, finalG, finalB);
-        src.set(x,y, finalC); 
+        if(numColors != 0)
+        {
+          int finalR = (int) colorTotalR/numColors;
+          int finalG = (int) colorTotalG/numColors;
+          int finalB = (int) colorTotalB/numColors;
+          color finalC = color(finalR, finalG, finalB);
+          src.set(x,y, finalC); 
+        }
       }
     }
   }

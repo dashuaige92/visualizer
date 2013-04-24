@@ -45,7 +45,7 @@ void draw()
   opencv.restore();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
   PImage src = opencv.image();
-  meanShiftFilter(src, 0, 0, 0);
+  meanShiftFilter(src, 2, 25, 1);
   image(src, 0 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
 }
 

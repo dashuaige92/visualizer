@@ -16,28 +16,24 @@ float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
- 
-
+PImage lastFrame;
 
 void setup()
 {
   size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
   keyPressed();
+  lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
 
   // Initialises the OpenCV object
   opencv = new OpenCV(this);
   // Opens a video capture stream
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
-  
- 
 }
 
 void draw()
 {
   colorMode(HSB);
- // background(0);
-  
-
+  set(0, 0, lastFrame);
 
   PImage img;
   // Get a mirrored webcam frame for intuitive UX.
@@ -85,28 +81,15 @@ void draw()
       }
     }
   }
-  for (int i = 1; i < 5; i++)
-  {
-    Point c = currPosition[i];
-    if (c == null)
-      continue;
-    stroke(gloveColors[i], 255, 255);
-    line(c.x-5, c.y, c.x+5, c.y);
-    line(c.x, c.y-5, c.x, c.y+5);
-    noStroke();
-    text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
-    text(nearestMatch[i], c.x+5, c.y+15);
-  }
- 
+
   if(lastPosition[4] == null)
-  {
-     System.out.println("GOT HERE");
     arrayCopy(currPosition, lastPosition);
-  }
    
 
   continuousLines(currPosition[4], lastPosition[4]);
  
+  lastFrame.copy(0, 0, FRAME_WIDTH, FRAME_HEIGHT, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  drawMarkers(img);
   arrayCopy(currPosition, lastPosition);
 }
 

@@ -1,9 +1,18 @@
-color blue = color(0, 0, 255);
-color white = color(255, 255, 255);
-
-void paint(PImage dest, int x, int y, PImage src) 
+// Draw markers for tracked fingers.
+void drawMarkers(PImage img)
 {
-  dest.set(x - src.width / 2, y - src.height / 2, src);
+  for (int i = 1; i < 5; i++)
+  {
+    Point c = currPosition[i];
+    if (c == null)
+      continue;
+    stroke(gloveColors[i], 255, 255);
+    line(c.x-5, c.y, c.x+5, c.y);
+    line(c.x, c.y-5, c.x, c.y+5);
+    noStroke();
+    text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
+    text(nearestMatch[i], c.x+5, c.y+15);
+  }
 }
 
 //draw ellipses that whose sizes depend on speed of "cursor"
@@ -18,7 +27,6 @@ void variableEllipse(PVector current, PVector last)
 void continuousLines(Point current, Point last)
 {
   stroke(255); //will draw white
-  System.out.println("LINE FROM: " + current.x + "," + current.y + " TO " + last.x + "," + last.y);
   line(current.x, current.y, last.x, last.y); 
 }
 

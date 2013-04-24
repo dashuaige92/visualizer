@@ -65,11 +65,13 @@ void draw()
   {
     Point c = blobs[i].centroid;
 
-    for (int j = 1; j < 5; j++) {
+    for (int j = 1; j < 5; j++)
+    {
       // Distance is function of distance from lastPosition and hueDist.
       float d = hueDist(img.get(c.x, c.y), gloveColors[j]);
 
-      if (lastPosition[j] != null) {
+      if (lastPosition[j] != null)
+      {
         Point c0 = lastPosition[j];
         d += map(abs(c.x - c0.x) + abs(c.y - c0.y), 0, FRAME_WIDTH + FRAME_HEIGHT, 0, distanceWeight);
         println(d);
@@ -77,16 +79,18 @@ void draw()
       //if (lastPosition[j] != null) {
         //Point c0 = lastPosition[j];
         //if (abs(c.x - c0.x) + abs(c.y - c0.y) > maxMovement)
-          //continue;
-      //}
+        //continue;
+        //}
 
-      if (d < nearestMatch[j]) {
+      if (d < nearestMatch[j])
+      {
         currPosition[j] = c;
         nearestMatch[j] = d;
       }
     }
   }
-  for (int i = 1; i < 5; i++) {
+  for (int i = 1; i < 5; i++)
+  {
     Point c = currPosition[i];
     if (c == null)
       continue;
@@ -112,14 +116,16 @@ void draw()
 
 }
 
-void mouseDragged() {
+void mouseDragged()
+{
   maxMovement = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
   println("maxMovement\t-> " + maxMovement);
   distanceWeight = (int) map(mouseX, 0, width, 0, FRAME_WIDTH + FRAME_HEIGHT);
   println("distanceWeight\t-> " + distanceWeight);
 }
 
-void keyPressed() {
+void keyPressed()
+{
   maxMovement = 50;
   println("maxMovement\t-> " + maxMovement);
   distanceWeight = 50;

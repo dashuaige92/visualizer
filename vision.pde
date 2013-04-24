@@ -25,7 +25,7 @@ PVector matchColor(PImage src, color c0, int sw, int sh)
   int closestY = -1;
   int closestX = -1;
   float closestDist = MAX_FLOAT;
-  
+
   for(int y = 0; y < sh; y++)
   {
     for(int x = 0; x < sw; x++)
@@ -46,9 +46,9 @@ PVector matchColor(PImage src, color c0, int sw, int sh)
 // NOTE: src will be modified
 void meanShiftFilter(PImage src, int r, float d, int maxIter)
 {
-//  src.filter(GRAY); // Make sure this function is run. Delete later.
+  //  src.filter(GRAY); // Make sure this function is run. Delete later.
   src.loadPixels();
-  
+
   for (int i = 0; i < maxIter; i++)
   {
     for (int x = 0; x < src.width; x++)
@@ -68,16 +68,16 @@ void meanShiftFilter(PImage src, int r, float d, int maxIter)
           {
             if(cDist(src.get(j,k),c) < d)  
             {
-            // System.out.println("color added"); 
+              // System.out.println("color added"); 
               colorTotalR += red(src.get(j,k));
-               colorTotalG += green(src.get(j,k));
-               colorTotalB += blue(src.get(j,k));
-               
-               numColors++;
+              colorTotalG += green(src.get(j,k));
+              colorTotalB += blue(src.get(j,k));
+
+              numColors++;
             }
-             
+
           }
-          
+
         }
         if(numColors != 0)
         {
@@ -121,9 +121,11 @@ void drawBlobs(Blob[] blobs)
 
     fill(255,0,255,64);
     stroke(255,0,255);
-    if ( points.length>0 ) {
+    if ( points.length>0 )
+    {
       beginShape();
-      for( int j=0; j<points.length; j++ ) {
+      for( int j=0; j<points.length; j++ )
+      {
         vertex( points[j].x, points[j].y );
       }
       endShape(CLOSE);

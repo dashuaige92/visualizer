@@ -18,10 +18,11 @@ Point[] lastPosition = new Point[5];
 
 PImage img2;
 PImage flag;
+PImage backgroundImage;
 
 void setup()
 {
-  size(2 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
+  size(3 * FRAME_WIDTH, 3 * FRAME_HEIGHT);
   keyPressed();
 
   // Initialises the OpenCV object
@@ -32,7 +33,9 @@ void setup()
   img2 = loadImage("rugby.jpg");
   flag = loadImage("flag.jpg");
   
- 
+  opencv.read();
+  opencv.flip(OpenCV.FLIP_HORIZONTAL);
+  backgroundImage = opencv.image().get();
 }
 
 void draw()
@@ -47,6 +50,18 @@ void draw()
   opencv.read();
   opencv.flip(OpenCV.FLIP_HORIZONTAL);
   img = opencv.image();
+  
+  //do background subtraction on img
+  
+  //this is the raw image
+  image(img, 2*FRAME_WIDTH, 0*FRAME_HEIGHT);
+  
+  //this is the subtracted image
+  img = subtract_background(img, backgroundImage);
+  image(img, 2*FRAME_WIDTH, 1*FRAME_HEIGHT);
+  
+  
+  
   image(img, 0 * FRAME_WIDTH, 1 * FRAME_HEIGHT);
 
   // Process the image so we can perform computer vision on it.
@@ -102,4 +117,11 @@ void keyPressed()
   println("maxDistance\t-> " + maxDistance);
   distanceWeight = 255;
   println("distanceWeight\t-> " + distanceWeight);
+}
+
+void mousePressed()
+{
+   opencv.read();
+  opencv.flip(OpenCV.FLIP_HORIZONTAL);
+  backgroundImage = opencv.image().get(); 
 }

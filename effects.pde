@@ -1,7 +1,3 @@
-color blue = color(0, 0, 255);
-color white = color(255, 255, 255);
-
-
 void drawMarkers(PImage img) 
 {
   for (int i = 1; i < 5; i++)

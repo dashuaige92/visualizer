@@ -16,6 +16,7 @@ float[] gloveColors = {0, 50, 250, 20, 141};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
+PImage lastFrame;
 PImage img2;
 PImage flag;
 PImage backgroundImage;
@@ -29,7 +30,8 @@ void setup()
   opencv = new OpenCV(this);
   // Opens a video capture stream
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
-  
+
+  lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
   img2 = loadImage("rugby.jpg");
   flag = loadImage("flag.jpg");
   
@@ -41,9 +43,7 @@ void setup()
 void draw()
 {
   colorMode(HSB);
- // background(0); //option: use with any of the SHAPEdraw methods and the shape
-                   //will follow around the "cursor"
-
+  set(0, 0, lastFrame);
 
   PImage img;
   // Get a mirrored webcam frame for intuitive UX.
@@ -79,27 +79,47 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
-
-  findMarkers(blobs, img);
-
+  findMarkers(blobs, img); // Match fingers to blob locations in currPosition
+  pruneMarkers(); // If a blob is believed to be a mismatch, null it
 
   if(lastPosition[4] == null)
   {
     arrayCopy(currPosition, lastPosition);
   }
-   
-//EFFECT CHOICES
-//  continuousLines(currPosition[4], lastPosition[4]);
-// pointColor(currPosition[4]);
-// overlay(currPosition[4], img2);
-//  variableEllipse(currPosition[4], lastPosition[4]);
-// circleDraw(currPosition[4]);
-// squareDraw(currPosition[4]);
-// roundedSquareDraw(currPosition[4]);
-// highlighter(currPosition[4]);
- murica(currPosition[4], flag);
- 
- 
+
+  println(key);
+  switch (key) {
+    case '1':
+      continuousLines(currPosition[4], lastPosition[4]);
+      break;
+    case '2':
+      pointColor(currPosition[4]);
+      break;
+    case '3':
+      overlay(currPosition[4], img2);
+      break;
+    case '4':
+      variableEllipse(currPosition[4], lastPosition[4]);
+      break;
+    case '5':
+      circleDraw(currPosition[4]);
+      break;
+    case '6':
+      squareDraw(currPosition[4]);
+      break;
+    case '7':
+      roundedSquareDraw(currPosition[4]);
+      break;
+    case '8':
+      highlighter(currPosition[4]);
+      break;
+    case '9':
+      murica(currPosition[4], flag);
+      break;
+  }
+
+  lastFrame = get(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+  drawMarkers(img);
   arrayCopy(currPosition, lastPosition);
 }
 
@@ -113,10 +133,15 @@ void mouseDragged()
 
 void keyPressed()
 {
-  maxDistance = 50;
-  println("maxDistance\t-> " + maxDistance);
-  distanceWeight = 255;
-  println("distanceWeight\t-> " + distanceWeight);
+  switch (key) {
+    case 'r':
+      maxDistance = 50;
+      println("maxDistance\t-> " + maxDistance);
+      distanceWeight = 255;
+      println("distanceWeight\t-> " + distanceWeight);
+    default:
+      lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
+  }
 }
 
 void mousePressed()

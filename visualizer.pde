@@ -56,22 +56,7 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
-
-  //BlobScore[][] scores = new BlobScore[5][];
-  for (int i = 1; i < 5; i++)
-  {
-    if (blobs.length == 0)
-      break;
-
-    BlobScore[] scores = new BlobScore[blobs.length];
-    for (int j = 0; j < blobs.length; j++)
-    {
-      Point c = blobs[j].centroid;
-      scores[j] = new BlobScore(j, i, img, c, lastPosition[i]);
-    }
-    Arrays.sort(scores);
-    currPosition[i] = blobs[scores[0].blobIndex].centroid;
-  }
+  findMarkers();
 
   if(lastPosition[4] == null)
     arrayCopy(currPosition, lastPosition);

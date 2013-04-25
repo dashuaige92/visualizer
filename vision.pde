@@ -9,88 +9,44 @@ float hueDist(color c1, color c2)
   return hueDist(c1, hue(c2));
 }
 
-float cDist(color c1, color c2)
-{
-  return dist(
-      hue(c1), hue(c2), 
-      saturation(c1), saturation(c2), 
-      brightness(c1), brightness(c2)
-      );
-}
-
-// Look for the pixel whose color is closest to c0 in src
-// Returns a PVector containing the xy value of the best pixel
-PVector matchColor(PImage src, color c0, int sw, int sh)
-{
-  int closestY = -1;
-  int closestX = -1;
-  float closestDist = MAX_FLOAT;
-
-  for(int y = 0; y < sh; y++)
+// Edit currPosition with nearest match or null.
+void findMarkers(Blob[] blobs, PImage img) {
+  int[] matches = {0, 0, 0, 0, 0}; // Look at next best match if conflicted.
+  BlobScore[][] scores = new BlobScore[5][];
+  for (int i = 1; i < 5; i++)
   {
-    for(int x = 0; x < sw; x++)
-    {
-      color c = src.get(x, y);
-      float d = cDist(c, c0);
-      if(d < closestDist){
-        closestDist = d;
-        closestY = y;
-        closestX = x;
-      }
-    } 
-  }
-  return new PVector(closestX, closestY);
-}
+    if (blobs.length == 0)
+      break;
 
-// Mean shift src with radius r and maximum color distance d based on cDist.
-// NOTE: src will be modified
-void meanShiftFilter(PImage src, int r, float d, int maxIter)
-{
-  //  src.filter(GRAY); // Make sure this function is run. Delete later.
-  src.loadPixels();
-
-  for (int i = 0; i < maxIter; i++)
-  {
-    for (int x = 0; x < src.width; x++)
+    scores[i] = new BlobScore[blobs.length];
+    for (int j = 0; j < blobs.length; j++)
     {
-      for (int y = 0; y < src.height; y++)
+      Point c = blobs[j].centroid;
+      scores[i][j] = new BlobScore(j, i, img, c, lastPosition[i]);
+    }
+    Arrays.sort(scores[i]); // Lowest (best) match at index 0.
+
+    //continue; // Uncomment this line to allow conflicts.
+    // Note: Doesn't solve multiple simultaneous conflicts.
+    for (int j = 1; j < i; j++)
+    {
+      if (blobs[scores[i][matches[i]].blobIndex] == blobs[scores[j][matches[j]].blobIndex])
       {
-        color c = src.get(x,y);
-        int colorTotalR = 0;
-        int colorTotalG = 0;
-        int colorTotalB = 0;
-        int numColors = 0;
-        //look at colors within radius window
-        //average colors within distance to center and assign new value to center
-        for (int j = x - r; j <= x + r; j++)
+        if (scores[i][matches[i]].compareTo(scores[j][matches[j]]) == 1)
         {
-          for(int k = y - r;  k <= y + r; k++)
-          {
-            if(cDist(src.get(j,k),c) < d)  
-            {
-              // System.out.println("color added"); 
-              colorTotalR += red(src.get(j,k));
-              colorTotalG += green(src.get(j,k));
-              colorTotalB += blue(src.get(j,k));
-
-              numColors++;
-            }
-
-          }
-
+          matches[i] += (matches[i] + 1 == blobs.length) ? 0 : 1;
         }
-        if(numColors != 0)
+        else
         {
-          int finalR = (int) colorTotalR/numColors;
-          int finalG = (int) colorTotalG/numColors;
-          int finalB = (int) colorTotalB/numColors;
-          color finalC = color(finalR, finalG, finalB);
-          src.set(x,y, finalC); 
+          matches[j] += (matches[j] + 1 == blobs.length) ? 0 : 1;
         }
       }
     }
   }
-  src.updatePixels();
+  for (int i = 1; i < 5; i++)
+  {
+    currPosition[i] = blobs[scores[i][matches[i]].blobIndex].centroid;
+  }
 }
 
 // Code taken from OpenCV blobs example.

@@ -10,13 +10,14 @@ int FRAME_WIDTH = 480;
 
 int threshold = 70;
 float maxDistance; // Distance at which distance contribution is clamped
-float distanceWeight; // Max contribution of distance
+float distanceWeight = 255; // Max contribution of distance
 
 float[] gloveColors = {0, 50, 250, 20, 141};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
-PImage lastFrame;
+PImage img2;
+PImage flag;
 
 void setup()
 {
@@ -27,12 +28,19 @@ void setup()
   opencv = new OpenCV(this);
   // Opens a video capture stream
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
+  
+  img2 = loadImage("rugby.jpg");
+  flag = loadImage("flag.jpg");
+  
+ 
 }
 
 void draw()
 {
   colorMode(HSB);
-  set(0, 0, lastFrame);
+ // background(0); //option: use with any of the SHAPEdraw methods and the shape
+                   //will follow around the "cursor"
+
 
   PImage img;
   // Get a mirrored webcam frame for intuitive UX.
@@ -56,16 +64,27 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
+
   findMarkers(blobs, img);
 
-  if(lastPosition[4] == null)
-    arrayCopy(currPosition, lastPosition);
-   
 
-  continuousLines(currPosition[4], lastPosition[4]);
+  if(lastPosition[4] == null)
+  {
+    arrayCopy(currPosition, lastPosition);
+  }
+   
+//EFFECT CHOICES
+//  continuousLines(currPosition[4], lastPosition[4]);
+// pointColor(currPosition[4]);
+// overlay(currPosition[4], img2);
+//  variableEllipse(currPosition[4], lastPosition[4]);
+// circleDraw(currPosition[4]);
+// squareDraw(currPosition[4]);
+// roundedSquareDraw(currPosition[4]);
+// highlighter(currPosition[4]);
+ murica(currPosition[4], flag);
  
-  lastFrame = get(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
-  drawMarkers(img);
+ 
   arrayCopy(currPosition, lastPosition);
 }
 
@@ -73,15 +92,14 @@ void mouseDragged()
 {
   maxDistance = (int) map(mouseX, 0, width, 0, 100);
   println("maxDistance\t-> " + maxDistance);
-  distanceWeight = (int) map(mouseY, 0, width, 0, 100);
+  distanceWeight = (int) map(mouseX, 0, width, 0, 1000);
   println("distanceWeight\t-> " + distanceWeight);
 }
 
 void keyPressed()
 {
-  lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
-  maxDistance = 100;
+  maxDistance = 50;
   println("maxDistance\t-> " + maxDistance);
-  distanceWeight = 30;
+  distanceWeight = 255;
   println("distanceWeight\t-> " + distanceWeight);
 }

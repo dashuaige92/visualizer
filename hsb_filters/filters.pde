@@ -1,7 +1,26 @@
-void hueFilter(PImage img) {
+void hueFilter(PImage img) 
+{
   img.loadPixels();
   for (int i = 0; i < img.width * img.height; i++) {
     img.pixels[i] = color(hue(img.pixels[i]), 255, 255);
+  }
+  img.updatePixels();
+}
+
+void satImage(PImage img) 
+{
+  img.loadPixels();
+  for (int i = 0; i < img.width * img.height; i++) {
+    img.pixels[i] = color(255, saturation(img.pixels[i]), 255);
+  }
+  img.updatePixels();
+}
+
+void brightImage(PImage img) 
+{
+  img.loadPixels();
+  for (int i = 0; i < img.width * img.height; i++) {
+    img.pixels[i] = color(255, 255, brightness(img.pixels[i]));
   }
   img.updatePixels();
 }

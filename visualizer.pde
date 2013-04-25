@@ -10,7 +10,7 @@ int FRAME_WIDTH = 480;
 
 int threshold = 70;
 float maxDistance; // Distance at which distance contribution is clamped
-float distanceWeight = 255; // Max contribution of distance
+float distanceWeight; // Max contribution of distance
 
 float[] gloveColors = {0, 50, 250, 20, 141};
 Point[] currPosition = new Point[5];
@@ -24,6 +24,10 @@ PImage backgroundImage;
 void setup()
 {
   size(3 * FRAME_WIDTH, 3 * FRAME_HEIGHT);
+
+  //
+  // Reset parameters
+  key = 'r';
   keyPressed();
 
   // Initialises the OpenCV object
@@ -87,7 +91,6 @@ void draw()
     arrayCopy(currPosition, lastPosition);
   }
 
-  println(key);
   switch (key) {
     case '1':
       continuousLines(currPosition[4], lastPosition[4]);
@@ -135,9 +138,9 @@ void keyPressed()
 {
   switch (key) {
     case 'r':
-      maxDistance = 50;
+      maxDistance = 100;
       println("maxDistance\t-> " + maxDistance);
-      distanceWeight = 255;
+      distanceWeight = 40;
       println("distanceWeight\t-> " + distanceWeight);
     default:
       lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);

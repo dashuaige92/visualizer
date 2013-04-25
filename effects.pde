@@ -11,7 +11,6 @@ void drawMarkers(PImage img)
     line(c.x, c.y-5, c.x, c.y+5);
     noStroke();
     text(hue(img.get(c.x, c.y)), c.x+5, c.y+5);
-    text(nearestMatch[i], c.x+5, c.y+15);
   }
 }
 

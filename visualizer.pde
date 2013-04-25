@@ -1,6 +1,7 @@
 import hypermedia.video.*;        //  Imports the OpenCV library
 OpenCV opencv;                    //  Creates a new OpenCV Object
 
+import java.util.Arrays;
 import java.awt.Rectangle;
 import java.awt.Point;
 
@@ -12,7 +13,6 @@ float maxDistance; // Distance at which distance contribution is clamped
 float distanceWeight; // Max contribution of distance
 
 float[] gloveColors = {0, 50, 250, 20, 141};
-float[] nearestMatch = {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
 Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
@@ -48,7 +48,7 @@ void draw()
   // Find blobs and draw them
   image(img, 1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   opencv.copy(img);
-  Blob[] blobs = opencv.blobs(100, 1000, 20, true);
+  Blob[] blobs = opencv.blobs(FRAME_WIDTH * FRAME_HEIGHT / 1250, FRAME_WIDTH * FRAME_HEIGHT / 50, 20, true);
   pushMatrix();
   translate(1 * FRAME_WIDTH, 0 * FRAME_HEIGHT);
   drawBlobs(blobs);
@@ -56,30 +56,21 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
-  nearestMatch = new float[] {MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT, MAX_FLOAT};
+
+  //BlobScore[][] scores = new BlobScore[5][];
   for (int i = 1; i < 5; i++)
   {
+    if (blobs.length == 0)
+      break;
+
+    BlobScore[] scores = new BlobScore[blobs.length];
     for (int j = 0; j < blobs.length; j++)
     {
       Point c = blobs[j].centroid;
-      float d = hueDist(img.get(c.x, c.y), gloveColors[i]);
-
-      // Distance is function of distance from lastPosition and hueDist.
-      if (lastPosition[i] != null)
-      {
-        Point c0 = lastPosition[i];
-        float dPosition = map(abs(c.x - c0.x) + abs(c.y - c0.y), maxDistance / 2, maxDistance, 0, distanceWeight);
-        dPosition = dPosition < 0 ? 0 : dPosition;
-        dPosition = dPosition > distanceWeight ? distanceWeight : dPosition;
-        d += dPosition;
-      }
-
-      if (d < nearestMatch[i])
-      {
-        currPosition[i] = c;
-        nearestMatch[i] = d;
-      }
+      scores[j] = new BlobScore(j, i, img, c, lastPosition[i]);
     }
+    Arrays.sort(scores);
+    currPosition[i] = blobs[scores[0].blobIndex].centroid;
   }
 
   if(lastPosition[4] == null)

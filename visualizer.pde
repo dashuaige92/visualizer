@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.awt.Rectangle;
 import java.awt.Point;
 
-int FRAME_HEIGHT = 360;
-int FRAME_WIDTH = 480;
+int FRAME_HEIGHT = 240;
+int FRAME_WIDTH = 320;
 
 int threshold = 70;
 float maxDistance; // Distance at which distance contribution is clamped
@@ -23,9 +23,8 @@ PImage backgroundImage;
 
 void setup()
 {
-  size(3 * FRAME_WIDTH, 3 * FRAME_HEIGHT);
+  size(3 * FRAME_WIDTH, 2 * FRAME_HEIGHT);
 
-  //
   // Reset parameters
   key = 'r';
   keyPressed();
@@ -137,19 +136,18 @@ void mouseDragged()
 void keyPressed()
 {
   switch (key) {
+    case 'c':
+      opencv.read();
+      opencv.flip(OpenCV.FLIP_HORIZONTAL);
+      backgroundImage = opencv.image().get(); 
+      break;
     case 'r':
       maxDistance = 100;
       println("maxDistance\t-> " + maxDistance);
       distanceWeight = 40;
       println("distanceWeight\t-> " + distanceWeight);
+      break;
     default:
       lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
   }
-}
-
-void mousePressed()
-{
-   opencv.read();
-  opencv.flip(OpenCV.FLIP_HORIZONTAL);
-  backgroundImage = opencv.image().get(); 
 }

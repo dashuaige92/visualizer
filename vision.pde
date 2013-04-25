@@ -10,7 +10,8 @@ float hueDist(color c1, color c2)
 }
 
 // Edit currPosition with nearest match or null.
-void findMarkers() {
+void findMarkers(Blob[] blobs, PImage img) {
+  int[] matches = {0, 0, 0, 0, 0}; // Look at next best match if conflicted.
   BlobScore[][] scores = new BlobScore[5][];
   for (int i = 1; i < 5; i++)
   {
@@ -23,8 +24,28 @@ void findMarkers() {
       Point c = blobs[j].centroid;
       scores[i][j] = new BlobScore(j, i, img, c, lastPosition[i]);
     }
-    Arrays.sort(scores[i]);
-    currPosition[i] = blobs[scores[i][0].blobIndex].centroid;
+    Arrays.sort(scores[i]); // Lowest (best) match at index 0.
+
+    //continue; // Uncomment this line to allow conflicts.
+    // Note: Doesn't solve multiple simultaneous conflicts.
+    for (int j = 1; j < i; j++)
+    {
+      if (blobs[scores[i][matches[i]].blobIndex] == blobs[scores[j][matches[j]].blobIndex])
+      {
+        if (scores[i][matches[i]].compareTo(scores[j][matches[j]]) == 1)
+        {
+          matches[i] += (matches[i] + 1 == blobs.length) ? 0 : 1;
+        }
+        else
+        {
+          matches[j] += (matches[j] + 1 == blobs.length) ? 0 : 1;
+        }
+      }
+    }
+  }
+  for (int i = 1; i < 5; i++)
+  {
+    currPosition[i] = blobs[scores[i][matches[i]].blobIndex].centroid;
   }
 }
 

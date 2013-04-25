@@ -56,7 +56,7 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
-  findMarkers();
+  findMarkers(blobs, img);
 
   if(lastPosition[4] == null)
     arrayCopy(currPosition, lastPosition);

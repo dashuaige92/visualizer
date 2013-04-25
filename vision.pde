@@ -22,7 +22,7 @@ void findMarkers(Blob[] blobs, PImage img) {
   for (int i = 1; i < 5; i++)
   {
     if (blobs.length == 0)
-      break;
+      return;
 
     scores[i] = new BlobScore[blobs.length];
     for (int j = 0; j < blobs.length; j++)

@@ -64,9 +64,9 @@ void draw()
 
   // Hue filter our image and find markers.
   hueFilter(img);
-
   findMarkers(blobs, img);
-
+  findMarkers(blobs, img); // Match fingers to blob locations in currPosition
+  pruneMarkers(); // If a blob is believed to be a mismatch, null it
 
   if(lastPosition[4] == null)
   {

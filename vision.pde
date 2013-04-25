@@ -9,6 +9,12 @@ float hueDist(color c1, color c2)
   return hueDist(c1, hue(c2));
 }
 
+// Null currPosition that doesn't fit a hand shape
+void pruneMarkers()
+{
+  
+}
+
 // Edit currPosition with nearest match or null.
 void findMarkers(Blob[] blobs, PImage img) {
   int[] matches = {0, 0, 0, 0, 0}; // Look at next best match if conflicted.

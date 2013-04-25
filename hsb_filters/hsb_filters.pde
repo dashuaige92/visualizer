@@ -33,16 +33,7 @@ void draw() {
   img = opencv.image();
   hueFilter(img);
   image( img, 0*(w+10)+10, 2*(h+10)+10 );
-  
-   img = opencv.image();
-  satImage(img);
-  image( img, 1*(w+10)+10, 0*(h+10)+10 );
-  
-   img = opencv.image();
-  brightImage(img);
-  image( img, 1*(w+10)+10, 1*(h+10)+10 );
-  
-  /*
+
   img = opencv.image();
   saturationFilter(img, threshold - window, true);
   image( img, 1*(w+10)+10, 0*(h+10)+10 );
@@ -68,6 +59,14 @@ void draw() {
   brightnessFilter(img, threshold - window, true);
   brightnessFilter(img, threshold + window, false);
   image( img, 2*(w+10)+10, 2*(h+10)+10 );
+
+  img = opencv.image();
+  satImage(img);
+  image( img, 3*(w+10)+10, 0*(h+10)+10 );
+
+  img = opencv.image();
+  brightImage(img);
+  image( img, 3*(w+10)+10, 1*(h+10)+10 );
 }
 
 void mouseDragged() {
@@ -77,7 +76,6 @@ void mouseDragged() {
   println("thresh\t-> " + threshold + "\t" + window);
   println("color\t-> " + hex(c));
   println("hsb\t-> " + hue(c) + "\t" + saturation(c) + "\t" + brightness(c));
-  */
 }
 
 void keyPressed() {

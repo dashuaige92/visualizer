@@ -17,7 +17,8 @@ Point[] currPosition = new Point[5];
 Point[] lastPosition = new Point[5];
 
 PImage lastFrame;
-PImage img2;
+PImage dye;
+PImage rugby;
 PImage flag;
 PImage backgroundImage;
 
@@ -35,7 +36,10 @@ void setup()
   opencv.capture(FRAME_WIDTH, FRAME_HEIGHT);
 
   lastFrame = new PImage(FRAME_WIDTH, FRAME_HEIGHT);
-  img2 = loadImage("rugby.jpg");
+  dye = loadImage("correcttiedye2.jpg"); 
+  dye.resize(FRAME_WIDTH, FRAME_HEIGHT);
+  rugby = loadImage("rugby.jpg");
+  rugby.resize(FRAME_WIDTH, FRAME_HEIGHT);
   flag = loadImage("flag.jpg");
   
   opencv.read();
@@ -95,10 +99,10 @@ void draw()
       continuousLines(currPosition[4], lastPosition[4]);
       break;
     case '2':
-      pointColor(currPosition[4]);
+      pointColor(currPosition[4], dye);
       break;
     case '3':
-      overlay(currPosition[4], img2);
+      overlay(currPosition[4], rugby);
       break;
     case '4':
       variableEllipse(currPosition[4], lastPosition[4]);

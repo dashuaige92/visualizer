@@ -32,7 +32,7 @@ void variableEllipse(Point current, Point last)
   {
     return; 
   }
-  float speed = dist(current.x, last.x, current.y, last.y);
+  float speed = dist(current.x, current.y, last.x, last.y);
   stroke(speed);
   ellipse(current.x, current.y, speed, speed);
 }
@@ -52,13 +52,12 @@ void continuousLines(Point current, Point last)
 //  randomly fills in semi-transparent circles to create a tie dye image
 //  size of the circles is dependent on the "cursor" position
 //  left = smaller, right = larger
-void pointColor(Point current)
+void pointColor(Point current, PImage img)
 {
   if(current == null)
   {
     return; 
   }
-  PImage img = loadImage("correcttiedye2.jpg"); 
   int smallPoint = 4;
    int largePoint = 40;
    noStroke();

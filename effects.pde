@@ -13,6 +13,18 @@ void drawMarkers(PImage img)
   }
 }
 
+// Draw multiple lines
+void coloredLines(Point[] current, Point[] last, float hues[])
+{
+  for (int i = 0; i < current.length; i++)
+  {
+    if (current[i] == null || last[i] == null)
+      continue;
+    stroke(hues[i], 255, 255);
+    line(current[i].x, current[i].y, last[i].x, last[i].y); 
+  }
+}
+
 //draw ellipses of varying sizes
 void variableEllipse(Point current, Point last)
 {
@@ -241,6 +253,3 @@ void murica(Point current, PImage img)
   
   image(img, x, y); 
 }
-
-
-

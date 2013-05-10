@@ -118,6 +118,13 @@ void draw()
     case '9':
       murica(currPosition[4], flag);
       break;
+    case 'b':
+      coloredLines(currPosition, lastPosition, gloveColors);
+      break;
+    case 't':
+      fill(0, 0, 0, 5);
+      coloredLines(currPosition, lastPosition, gloveColors);
+      break;
   }
 
   lastFrame = get(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
